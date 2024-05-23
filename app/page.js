@@ -68,10 +68,15 @@ export default function Home() {
     }
   };
 
+  const pickRandomGame = () => {
+    
+  }
+
   useEffect(() => {}, []);
   return (
     <main>
-      <form onSubmit={handleSubmit}>
+      <h1>Boardgame List</h1>
+      {!boardgames.length && <form onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="BGG username"
@@ -79,8 +84,8 @@ export default function Home() {
           onChange={(e) => setUsername(e.target.value)}
         />
         <button>Get Games</button>
-      </form>
-
+      </form>}
+      {boardgames.length && <button onClick={pickRandomGame}>Random game</button>}
       {!loading ? (
         boardgames.length > 0 && (
           <>

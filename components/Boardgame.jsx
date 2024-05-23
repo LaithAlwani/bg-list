@@ -8,7 +8,7 @@ export default function Boardgame({ boardgame }) {
       <div className="img-wrapper">
         <Image src={thumbnail} fill sizes="(max-width: 768px) 100vw" alt={title} />
       </div>
-      <h1>{title}</h1>
+      <h3 className="title">{title}</h3>
       <p>
         <PiUsersThreeFill size={24} /> {minPlayers} - {maxPlayers}
       </p>

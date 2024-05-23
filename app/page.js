@@ -85,7 +85,7 @@ export default function Home() {
         />
         <button>Get Games</button>
       </form>}
-      {boardgames.length && <button onClick={pickRandomGame}>Random game</button>}
+      {boardgames.length >0 && <button onClick={pickRandomGame}>Random game</button>}
       {!loading ? (
         boardgames.length > 0 && (
           <>
@@ -93,6 +93,7 @@ export default function Home() {
             <div className="boardgames-container">
               {boardgames
                 .filter((bg) => bg.status.own === "1")
+                .filter((bg) => bg.isExpansion === false)
                 .map((bg) => (
                   <Boardgame boardgame={bg} key={bg.id} />
                 ))}

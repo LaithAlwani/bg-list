@@ -1,6 +1,9 @@
 /* @tailwind base;
 @tailwind components;
 @tailwind utilities; */
+*{
+  scroll-behavior:smooth;
+}
 
 a{
   text-decoration: none;
@@ -29,6 +32,7 @@ button{
   justify-content: flex-start;
   flex-wrap: nowrap;
   overflow-x: scroll;
+  scroll-snap-type: x mandatory;
   /* gap: 1rem; */
 }
 .boardgame{
@@ -39,6 +43,7 @@ button{
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: right 5s
 }
 
 /* .boardgame .img-wrapper{

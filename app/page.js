@@ -22,7 +22,6 @@ export default function Home() {
 
       if (items?.item) {
         setBoardgames([]);
-        console.log(items.item[0]);
         items.item.forEach(async (item) => {
           const id = item["@_objectid"];
           const res = await fetch(`https://boardgamegeek.com/xmlapi2/thing?id=${id}`);
@@ -57,6 +56,7 @@ export default function Home() {
                 id: id,
               },
             ]);
+            localStorage.setItem("boardgames", boardgames)
           }
         });
       }
@@ -69,7 +69,9 @@ export default function Home() {
   };
 
   const pickRandomGame = () => {
-    
+    const ownedBoardgames = boardgames.filter(bg => bg.status.own === "1").filter(bg=>bg.isExpansion === false);
+    const random = Math.floor(Math.random() * ownedBoardgames.length);
+    document.getElementById(ownedBoardgames[random].id).scrollIntoView({behavior:"smooth"})
   }
 
   useEffect(() => {}, []);

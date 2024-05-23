@@ -5,7 +5,7 @@ export default function Boardgame({ boardgame }) {
   const { id, thumbnail, image, title, minPlayers, maxPlayers, playTime, bggLink } = boardgame;
   return (
     <div className="boardgame" id={id}>
-      <Image src={image} fill sizes="(max-width: 768px) 25vw" alt={title} />
+      <Image src={thumbnail} fill sizes="(max-width: 768px) 25vw" alt={title} />
       <div className="content-wrapper">
         <div className="content">
           <h4 className="title">{title}</h4>

@@ -4,61 +4,38 @@ import { useState, useEffect } from "react";
 import { XMLParser } from "fast-xml-parser";
 import { toast } from "react-hot-toast";
 import Boardgame from "@/components/Boardgame";
+import { createBoardgame, fetchBoardGameBGG, fetchUserListBGG } from "@/lib/functions";
 
 export default function Home() {
   const [boardgames, setBoardgames] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingLocalStorage, setLoadingLocalStorage] = useState(true);
   const [username, setUsername] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username) return toast.error("Please enter username");
+    localStorage.setItem("username", username);
+
     setLoading(true);
     try {
-      const res = await fetch(`https://boardgamegeek.com/xmlapi2/collection?username=${username}`);
-      const data = await res.text();
-      const parser = new XMLParser({ ignoreAttributes: false });
-      const { items } = parser.parse(data);
+      const userList = await fetchUserListBGG(username);
 
-      if (items?.item) {
+      if (userList) {
         setBoardgames([]);
-        items.item.forEach(async (item) => {
-          const id = item["@_objectid"];
-          const res = await fetch(`https://boardgamegeek.com/xmlapi2/thing?id=${id}`);
-          const data = await res.text();
-          const parser = new XMLParser({ ignoreAttributes: false });
-          const { items } = parser.parse(data);
+        const bgArr = [];
+        userList.forEach(async (listItem) => {
+          const id = listItem["@_objectid"];
+          const boardgameItem = await fetchBoardGameBGG(id)
 
-          if (items.item) {
-            setBoardgames((prevState) => [
-              ...prevState,
-              {
-                title: item.name["#text"],
-                thumbnail: items.item.thumbnail,
-                image: items.item.image,
-                isExpansion: items.item["@_type"] === "boardgameexpansion",
-                year: items.item.yearpublished["@vaule"],
-                status: {
-                  own: item.status["@_own"],
-                  forTrade: item.status["@_fortrade"],
-                  preorder: item.status["@_preordered"],
-                  preowned: item.status["@_prevowned"],
-                  want: item.status["@_want"],
-                  wantToBuy: item.status["@_wanttobuy"],
-                  wantToPlay: item.status["@_wanttoplay"],
-                  wishlist: item.status["@_wishlist"],
-                  wishlistProprity: item.status["@_wishlistpriority"],
-                },
-                minPlayers: items.item.minplayers["@_value"],
-                maxPlayers: items.item.maxplayers["@_value"],
-                playTime: items.item.playingtime["@_value"],
-                bggLink: `https://boardgamegeek.com/boardgame/${id}`,
-                id: id,
-              },
-            ]);
-            localStorage.setItem("boardgames", boardgames)
+          if (boardgameItem) {
+            const TempBoardgame = createBoardgame(listItem, boardgameItem);
+            setBoardgames((prevState) => [...prevState, TempBoardgame]);
+           await bgArr.push(TempBoardgame);
           }
+          localStorage.setItem("boardgames", JSON.stringify(bgArr));
         });
+        
       }
     } catch (err) {
       console.log(err);
@@ -69,25 +46,43 @@ export default function Home() {
   };
 
   const pickRandomGame = () => {
-    const ownedBoardgames = boardgames.filter(bg => bg.status.own === "1").filter(bg=>bg.isExpansion === false);
+    const ownedBoardgames = boardgames
+      .filter((bg) => bg.status.own === "1")
+      .filter((bg) => bg.isExpansion === false);
     const random = Math.floor(Math.random() * ownedBoardgames.length);
-    document.getElementById(ownedBoardgames[random].id).scrollIntoView({behavior:"smooth"})
-  }
+    document.getElementById(ownedBoardgames[random].id).scrollIntoView({ behavior: "smooth" });
+  };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (localStorage.getItem("boardgames")) {
+      setBoardgames(JSON.parse(localStorage.getItem("boardgames")));
+    }
+    if (localStorage.getItem("username")) {
+      setUsername(localStorage.getItem("username"));
+    }
+    setLoadingLocalStorage(false);
+  }, []);
   return (
     <main>
       <h1>Boardgame List</h1>
-      {!boardgames.length && <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="BGG username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <button>Get Games</button>
-      </form>}
-      {boardgames.length >0 && <button onClick={pickRandomGame}>Random game</button>}
+      {console.log(loading)}
+      {loadingLocalStorage ? (
+        <h1>Loading...</h1>
+      ) : (
+        !boardgames.length && (
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="BGG username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <button>Get Games</button>
+          </form>
+        )
+      )}
+      {boardgames.length > 0 && <button onClick={pickRandomGame}>Random game</button>}
+      {boardgames.length > 0 && <button onClick={handleSubmit}>Sync BGG Library</button>}
       {!loading ? (
         boardgames.length > 0 && (
           <>

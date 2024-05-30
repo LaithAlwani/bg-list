@@ -38,12 +38,12 @@ button{
 
 .boardgame{
   position: relative;
-  height: 14rem;
+  height: 12rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: right 5s
+  
 }
 
 .boardgame .content-wrapper{
@@ -74,4 +74,11 @@ button{
 .boardgame  img{
   width: auto;
   height: 100%
+}
+
+
+@media only screen and (min-width:768px){
+  .boardgame{
+    height: 16rem;
+  }
 }

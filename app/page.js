@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { XMLParser } from "fast-xml-parser";
 import { toast } from "react-hot-toast";
 import Boardgame from "@/components/Boardgame";
 import { createBoardgame, fetchBoardGameBGG, fetchUserListBGG } from "@/lib/functions";
+import BoardgameList from "@/components/BoardgameList";
 
 export default function Home() {
   const [boardgames, setBoardgames] = useState([]);
@@ -26,16 +26,15 @@ export default function Home() {
         const bgArr = [];
         userList.forEach(async (listItem) => {
           const id = listItem["@_objectid"];
-          const boardgameItem = await fetchBoardGameBGG(id)
+          const boardgameItem = await fetchBoardGameBGG(id);
 
           if (boardgameItem) {
             const TempBoardgame = createBoardgame(listItem, boardgameItem);
             setBoardgames((prevState) => [...prevState, TempBoardgame]);
-           await bgArr.push(TempBoardgame);
+            await bgArr.push(TempBoardgame);
           }
           localStorage.setItem("boardgames", JSON.stringify(bgArr));
         });
-        
       }
     } catch (err) {
       console.log(err);
@@ -65,7 +64,6 @@ export default function Home() {
   return (
     <main>
       <h1>Boardgame List</h1>
-      {console.log(loading)}
       {loadingLocalStorage ? (
         <h1>Loading...</h1>
       ) : (
@@ -86,79 +84,23 @@ export default function Home() {
       {!loading ? (
         boardgames.length > 0 && (
           <>
-            <h2>Owned:</h2>
-            <div className="boardgames-container">
-              {boardgames
-                .filter((bg) => bg.status.own === "1")
-                .filter((bg) => bg.isExpansion === false)
-                .map((bg) => (
-                  <Boardgame boardgame={bg} key={bg.id} />
-                ))}
-            </div>
-            <h2>ForTrade:</h2>
-            <div className="boardgames-container">
-              {boardgames
-                .filter((bg) => bg.status.forTrade === "1")
-                .map((bg) => (
-                  <Boardgame boardgame={bg} key={bg.id} />
-                ))}
-            </div>
-            {boardgames.filter((bg) => bg.status.wantToPlay === "1").length > 0 && (
-              <>
-                <h2>Want to Play:</h2>
-                <div className="boardgames-container">
-                  {boardgames
-                    .filter((bg) => bg.status.wantToPlay === "1")
-                    .map((bg) => (
-                      <Boardgame boardgame={bg} key={bg.id} />
-                    ))}
-                </div>
-              </>
-            )}
-            {boardgames.filter((bg) => bg.status.preorder === "1").length > 0 && (
-              <>
-                <h2>Preorders:</h2>
-                <div className="boardgames-container">
-                  {boardgames
-                    .filter((bg) => bg.status.preorder === "1")
-                    .map((bg) => (
-                      <Boardgame boardgame={bg} key={bg.id} />
-                    ))}
-                </div>
-              </>
-            )}
-            <h2>Preowned:</h2>
-            <div className="boardgames-container">
-              {boardgames
-                .filter((bg) => bg.status.preowned === "1")
-                .map((bg) => (
-                  <Boardgame boardgame={bg} key={bg.id} />
-                ))}
-            </div>
-            {boardgames.filter((bg) => bg.status.wantToBuy === "1").length > 0 && (
-              <>
-                <h2>Want to Buy:</h2>
-                <div className="boardgames-container">
-                  {boardgames
-                    .filter((bg) => bg.status.wantToBuy === "1")
-                    .map((bg) => (
-                      <Boardgame boardgame={bg} key={bg.id} />
-                    ))}
-                </div>
-              </>
-            )}
-            {boardgames.filter((bg) => bg.status.wishlist != "0").length > 0 && (
-              <>
-                <h2>Wishlist:</h2>
-                <div className="boardgames-container">
-                  {boardgames
-                    .filter((bg) => bg.status.wishlist != "0")
-                    .map((bg) => (
-                      <Boardgame boardgame={bg} key={bg.id} />
-                    ))}
-                </div>
-              </>
-            )}
+            <BoardgameList boardgames={boardgames} title="Owned" exp={true} type="own" />
+            <BoardgameList boardgames={boardgames} title="For Trade" exp={true} type="forTrade" />
+            <BoardgameList
+              boardgames={boardgames}
+              title="Want To Play"
+              exp={true}
+              type="watToPlay"
+            />
+            <BoardgameList boardgames={boardgames} title="Preorder" exp={true} type="preorder" />
+            <BoardgameList boardgames={boardgames} title="Preowned" exp={true} type="preowned" />
+            <BoardgameList
+              boardgames={boardgames}
+              title="Want To Buy"
+              exp={true}
+              type="wantToBuy"
+            />
+            <BoardgameList boardgames={boardgames} title="Wishlist" exp={true} type="wishlist" />
           </>
         )
       ) : (

@@ -84,23 +84,23 @@ export default function Home() {
       {!loading ? (
         boardgames.length > 0 && (
           <>
-            <BoardgameList boardgames={boardgames} title="Owned" exp={true} type="own" />
-            <BoardgameList boardgames={boardgames} title="For Trade" exp={true} type="forTrade" />
+            <BoardgameList boardgames={boardgames} title="Owned" exp={false} type="own" />
+            <BoardgameList boardgames={boardgames} title="For Trade" exp={false} type="forTrade" />
             <BoardgameList
               boardgames={boardgames}
               title="Want To Play"
-              exp={true}
+              exp={false}
               type="watToPlay"
             />
-            <BoardgameList boardgames={boardgames} title="Preorder" exp={true} type="preorder" />
-            <BoardgameList boardgames={boardgames} title="Preowned" exp={true} type="preowned" />
+            <BoardgameList boardgames={boardgames} title="Preorder" exp={false} type="preorder" />
+            <BoardgameList boardgames={boardgames} title="Preowned" exp={false} type="preowned" />
             <BoardgameList
               boardgames={boardgames}
               title="Want To Buy"
-              exp={true}
+              exp={false}
               type="wantToBuy"
             />
-            <BoardgameList boardgames={boardgames} title="Wishlist" exp={true} type="wishlist" />
+            <BoardgameList boardgames={boardgames} title="Wishlist" exp={false} type="wishlist" />
           </>
         )
       ) : (
